@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Check trasparenza AI Act</title>
+<meta name="description" content="Verifica in 3 minuti se il tuo chatbot, voicebot e i contenuti generati con AI rispettano gli obblighi di trasparenza dell'AI Act (art. 50), in vigore dal 2 agosto 2026.">
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --ink:#15202b; --muted:#5b6771; --line:#dfe3e8;
+    --accent:#0b3d91; --accent-ink:#fff; --ok:#1c7c3f; --warn:#b26a00; --bad:#b3261e; --soft:#eef2f8;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0f141a; --card:#171e26; --ink:#e7ecf1; --muted:#9aa7b2; --line:#2a3440;
+      --accent:#6ea0ff; --accent-ink:#0b1220; --ok:#5fcf84; --warn:#f0b24a; --bad:#ff7b72; --soft:#1d2733;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0f141a; --card:#171e26; --ink:#e7ecf1; --muted:#9aa7b2; --line:#2a3440;
+    --accent:#6ea0ff; --accent-ink:#0b1220; --ok:#5fcf84; --warn:#f0b24a; --bad:#ff7b72; --soft:#1d2733;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  main{max-width:760px;margin:0 auto;padding:32px 16px 80px}
+  h1{font-size:clamp(26px,5vw,36px);line-height:1.15;margin:0 0 12px}
+  h2{font-size:22px;margin:40px 0 12px}
+  p{margin:0 0 12px}
+  .muted{color:var(--muted)}
+  .pill{display:inline-block;font-size:13px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);margin-bottom:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin:14px 0}
+  .q{border-top:1px solid var(--line);padding:18px 0}
+  .q:first-of-type{border-top:0;padding-top:4px}
+  .q b{display:block;margin-bottom:4px}
+  .q small{display:block;color:var(--muted);margin-bottom:10px}
+  .opts{display:flex;flex-wrap:wrap;gap:8px}
+  .opts label{border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer;user-select:none}
+  .opts input{margin-right:6px}
+  .opts label:has(input:checked){background:var(--soft);border-color:var(--accent)}
+  button,.btn{font:inherit;font-weight:600;background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:14px 22px;cursor:pointer;width:100%}
+  button.secondary{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  button[disabled]{opacity:.6;cursor:default}
+  #risultato{display:none}
+  .semaforo{font-size:40px;font-weight:700;line-height:1.1}
+  .semaforo.ok{color:var(--ok)} .semaforo.warn{color:var(--warn)} .semaforo.bad{color:var(--bad)}
+  .gap{border-left:4px solid var(--bad);padding:8px 14px;margin:10px 0;background:var(--soft);border-radius:0 8px 8px 0}
+  .gap.verifica{border-left-color:var(--warn)}
+  .gap b{display:block}
+  .gap .art{font-size:13px;color:var(--muted)}
+  form .riga{display:grid;gap:10px;margin-bottom:10px}
+  @media(min-width:560px){form .riga.due{grid-template-columns:1fr 1fr}}
+  input[type=text],input[type=email],input[type=tel],input[type=url],textarea{font:inherit;width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+  textarea{min-height:80px;resize:vertical}
+  .err{color:var(--bad);min-height:1.4em;margin:6px 0}
+  .fine{display:none}
+  body.inviato .fine{display:block} body.inviato #lead{display:none}
+  .hp{position:absolute;left:-9999px}
+  .prezzo{display:flex;gap:14px;flex-wrap:wrap}
+  .prezzo div{flex:1 1 220px;border:1px solid var(--line);border-radius:10px;padding:14px}
+  .prezzo .n{font-size:26px;font-weight:700}
+  footer{margin-top:40px;font-size:13px;color:var(--muted)}
+  @media print{
+    body{background:#fff;color:#000}
+    .no-print,#lead,.fine,footer,button{display:none !important}
+    #risultato{display:block !important}
+    .card{border-color:#999;break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<main>
+  <span class="pill">AI Act · art. 50 · in vigore dal 2 agosto 2026</span>
+  <h1>Il tuo chatbot dice di essere un'AI?</h1>
+  <p class="muted">Dal 2 agosto 2026 chi usa un chatbot, un voicebot o contenuti generati con l'intelligenza artificiale verso clienti e pubblico deve dirlo. Le sanzioni arrivano a 15 milioni di euro o al 3% del fatturato mondiale. Rispondi a 12 domande: vedi subito dove sei scoperto e cosa fare.</p>
+
+  <section class="card no-print" id="domande">
+    <div id="lista"></div>
+    <p class="err" id="errq"></p>
+    <button id="calcola" type="button">Vedi il risultato</button>
+  </section>
+
+  <section id="risultato">
+    <div class="card">
+      <div class="semaforo" id="sem"></div>
+      <p id="riassunto"></p>
+      <p class="muted" id="data"></p>
+    </div>
+    <div id="gaps"></div>
+    <div class="card no-print" style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="secondary" type="button" onclick="window.print()" style="flex:1">Stampa o salva il report in PDF</button>
+      <button class="secondary" type="button" id="rifai" style="flex:1">Rifai il check</button>
+    </div>
+
+    <h2>Vuoi la verifica fatta da noi, con prova documentale?</h2>
+    <p>L'autovalutazione dice dove guardare. L'audit prova il bot dal vivo come farebbe un cliente, da computer e da telefono, controlla i contenuti pubblicati e consegna un fascicolo con screenshot datati, le correzioni da fare e i testi di avviso già scritti.</p>
+    <div class="prezzo">
+      <div><div class="n" id="prezzo-audit"></div>Audit a prezzo fisso, per un chatbot o voicebot. Report in 5 giorni lavorativi.</div>
+      <div><div class="n" id="prezzo-canone"></div>Ricontrollo a ogni modifica del bot e a ogni cambio di regole. Disdetta libera.</div>
+    </div>
+
+    <div class="card">
+      <form id="lead" novalidate>
+        <div class="riga due">
+          <input type="text" name="nome" placeholder="Nome e cognome" autocomplete="name" required>
+          <input type="text" name="azienda" placeholder="Azienda" autocomplete="organization" required>
+        </div>
+        <div class="riga due">
+          <input type="email" name="email" placeholder="Email di lavoro" autocomplete="email" required>
+          <input type="tel" name="telefono" placeholder="Telefono (facoltativo)" autocomplete="tel">
+        </div>
+        <div class="riga">
+          <input type="url" name="sito" placeholder="Sito dove c'è il chatbot (https://...)">
+          <textarea name="note" placeholder="Che bot usate e da quale fornitore, se lo sapete"></textarea>
+        </div>
+        <label style="display:block;margin:6px 0 10px;font-size:14px"><input type="checkbox" name="privacy"> Acconsento a essere ricontattato per questa richiesta.</label>
+        <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off">
+        <p class="err" id="err"></p>
+        <button id="btn" type="submit">Richiedi l'audit</button>
+        <p class="muted" style="margin-top:10px;font-size:14px">Oppure scrivici su <a id="wa" href="#">WhatsApp</a>: ti rispondiamo con una data per la verifica.</p>
+      </form>
+      <div class="fine">
+        <b>Richiesta ricevuta.</b> Ti scriviamo entro un giorno lavorativo con una data per l'audit. Il report che hai appena fatto lo alleghiamo noi.
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Riferimenti: Regolamento (UE) 2024/1689, art. 50 (obblighi di trasparenza, applicabile dal 2 agosto 2026), art. 4 (alfabetizzazione, dal 2 febbraio 2025), art. 99 par. 4 (sanzioni fino a 15 M€ o 3% del fatturato). Questo check non è un parere legale: segnala i punti da verificare.
+  </footer>
+</main>
+
+<script>
+  // ===== CONFIGURAZIONE =====
+  var PREZZO_AUDIT = "1.500 €";          // prezzo fisso dell'audit
+  var PREZZO_CANONE = "150 €/mese";      // canone di ricontrollo
+  var WA_NUMBER = "";                    // es. "393401234567" (senza + e senza spazi). Vuoto = link nascosto
+  var WA_TEXT = "Ciao, ho fatto il check trasparenza AI Act e vorrei l'audit del nostro chatbot.";
+  var ENDPOINT = "";                     // URL /exec dell'Apps Script (vedi google-apps-script.gs). Vuoto = solo log in console
+  // ==========================
+
+  var DOMANDE = [
+    {id:"chatbot", t:"Il chatbot sul sito o in app avvisa che è un'intelligenza artificiale al primo contatto?",
+     s:"Prima che l'utente scriva, non nascosto dentro i termini di servizio.",
+     art:"Art. 50 par. 1", fai:"Aggiungere nel messaggio di benvenuto una frase tipo «Sono l'assistente virtuale di [azienda], funziono con intelligenza artificiale». Va mostrata a ogni nuova conversazione."},
+    {id:"voicebot", t:"Il voicebot o il centralino automatico con AI lo dice all'inizio della chiamata?",
+     s:"Vale anche per i sistemi di un fornitore esterno che rispondono a nome vostro.",
+     art:"Art. 50 par. 1", fai:"Inserire l'avviso nei primi secondi della chiamata, prima di qualunque domanda all'utente, e registrarlo nel flusso del fornitore."},
+    {id:"mobile", t:"L'avviso è leggibile anche da telefono, senza scorrere o aprire altro?",
+     s:"Molti widget tagliano il testo sui display piccoli.",
+     art:"Art. 50 par. 1 e par. 5", fai:"Provare il bot da uno smartphone reale e accorciare l'avviso finché resta tutto visibile nella prima schermata."},
+    {id:"umano", t:"Chi lo chiede riesce ad arrivare a una persona?",
+     s:"Non è un obbligo dell'art. 50, ma è ciò che un'autorità e un cliente si aspettano.",
+     art:"Buona pratica (e art. 22 GDPR se il bot prende decisioni)", fai:"Prevedere una via d'uscita chiara: «parla con un operatore» che apre un ticket o passa la chiamata.", consigliato:true},
+    {id:"testi", t:"I testi pubblicati generati con AI su temi di interesse pubblico sono dichiarati o revisionati da una persona responsabile?",
+     s:"Articoli, comunicati, newsletter informative. L'obbligo cade se c'è una revisione editoriale umana e un responsabile della pubblicazione.",
+     art:"Art. 50 par. 4", fai:"Decidere una regola: o ogni testo passa da una revisione umana documentata, oppure riporta l'indicazione che è stato generato con AI."},
+    {id:"media", t:"Immagini, audio e video generati o alterati con AI che pubblicate sono etichettati?",
+     s:"Compresi i contenuti per social e ads.",
+     art:"Art. 50 par. 4", fai:"Aggiungere un'etichetta visibile («immagine generata con AI») e conservare il file originale e il prompt."},
+    {id:"deepfake", t:"Se usate volti o voci di persone reali ricreati con AI, è segnalato in modo evidente?",
+     s:"Ad esempio un testimonial o un dipendente «clonato» per un video.",
+     art:"Art. 50 par. 4", fai:"Avviso in sovrimpressione per tutta la durata o all'inizio del contenuto, più liberatoria scritta della persona."},
+    {id:"marcatura", t:"Se il sistema generativo è vostro (sviluppato o fine-tunato da voi), gli output sono marcati in modo leggibile dalle macchine?",
+     s:"Se usate solo strumenti di terzi, rispondi «non si applica».",
+     art:"Art. 50 par. 2 (fornitori)", fai:"Attivare watermark o metadati standard (es. C2PA) sugli output e documentare come funziona."},
+    {id:"emozioni", t:"Usate riconoscimento delle emozioni o categorizzazione biometrica su clienti o dipendenti?",
+     s:"Analisi del tono di voce nelle chiamate, telecamere con analisi del volto. Se non le usate, rispondi «non si applica».",
+     art:"Art. 50 par. 3", fai:"Informare le persone esposte prima del trattamento e verificare con il legale se il caso rientra nei divieti dell'art. 5.", inverti:true},
+    {id:"inventario", t:"Avete un elenco scritto dei sistemi AI che usate verso clienti e pubblico, compresi quelli dentro strumenti dei fornitori?",
+     s:"CRM, help desk, centralino, tool di marketing: spesso l'AI è attiva senza che nessuno l'abbia scelta.",
+     art:"Prerequisito per tutto l'art. 50", fai:"Un foglio con: strumento, fornitore, cosa fa l'AI, chi la vede, dove sta l'avviso. Aggiornarlo a ogni nuovo strumento."},
+    {id:"formazione", t:"Le persone che usano o gestiscono questi sistemi hanno ricevuto una formazione sull'AI?",
+     s:"Obbligo di alfabetizzazione in vigore dal 2 febbraio 2025.",
+     art:"Art. 4", fai:"Una sessione documentata (data, partecipanti, contenuti) su cosa fanno i sistemi in uso, limiti ed errori tipici."},
+    {id:"prove", t:"Potete dimostrare oggi che gli avvisi c'erano: screenshot datati, registrazioni, versioni del bot?",
+     s:"In un controllo conta ciò che si prova, non ciò che si dichiara.",
+     art:"Art. 50 par. 1 e art. 26 (obblighi dei deployer)", fai:"Archiviare a ogni modifica del bot uno screenshot da desktop e da mobile e un estratto del flusso vocale, con data."}
+  ];
+
+  var lista = document.getElementById("lista");
+  DOMANDE.forEach(function(d, i){
+    var div = document.createElement("div"); div.className = "q";
+    div.innerHTML = "<b>" + (i+1) + ". " + d.t + "</b><small>" + d.s + "</small>" +
+      '<div class="opts">' +
+      ['si|Sì','no|No','nonso|Non so','na|Non si applica'].map(function(o){
+        var p = o.split("|");
+        return '<label><input type="radio" name="'+d.id+'" value="'+p[0]+'">'+p[1]+'</label>';
+      }).join("") + "</div>";
+    lista.appendChild(div);
+  });
+
+  document.getElementById("prezzo-audit").textContent = PREZZO_AUDIT;
+  document.getElementById("prezzo-canone").textContent = PREZZO_CANONE;
+  var wa = document.getElementById("wa");
+  if (WA_NUMBER) wa.href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(WA_TEXT);
+  else wa.parentElement.style.display = "none";
+
+  var risposte = {};
+  document.getElementById("calcola").addEventListener("click", function(){
+    var mancanti = [];
+    DOMANDE.forEach(function(d){
+      var r = document.querySelector('input[name="'+d.id+'"]:checked');
+      if (!r) mancanti.push(d.id); else risposte[d.id] = r.value;
+    });
+    if (mancanti.length){
+      document.getElementById("errq").textContent = "Mancano " + mancanti.length + " risposte.";
+      var primo = document.querySelector('input[name="'+mancanti[0]+'"]');
+      primo.closest(".q").scrollIntoView({behavior:"smooth", block:"center"});
+      return;
+    }
+    document.getElementById("errq").textContent = "";
+    mostra();
+  });
+
+  function mostra(){
+    var applicabili = 0, ok = 0, gaps = [];
+    DOMANDE.forEach(function(d){
+      var v = risposte[d.id];
+      if (v === "na") return;
+      applicabili++;
+      // Per la domanda "inverti" (emozioni) la risposta "sì" vuol dire che il caso esiste e va gestito.
+      var conforme = d.inverti ? false : (v === "si");
+      if (d.inverti && v === "no") conforme = true;
+      if (conforme) { ok++; return; }
+      gaps.push({d:d, stato: v === "nonso" ? "verifica" : "gap"});
+    });
+    var veri = gaps.filter(function(g){ return g.stato === "gap" && !g.d.consigliato; }).length;
+    var daVerificare = gaps.filter(function(g){ return g.stato === "verifica"; }).length;
+    var sem = document.getElementById("sem");
+    var cls, titolo;
+    if (veri === 0 && daVerificare === 0) { cls = "ok"; titolo = "In regola sui punti controllati"; }
+    else if (veri === 0) { cls = "warn"; titolo = daVerificare + (daVerificare === 1 ? " punto da verificare" : " punti da verificare"); }
+    else { cls = "bad"; titolo = veri + (veri === 1 ? " obbligo scoperto" : " obblighi scoperti"); }
+    sem.className = "semaforo " + cls; sem.textContent = titolo;
+    document.getElementById("riassunto").textContent =
+      ok + " su " + applicabili + " punti applicabili risultano coperti." +
+      (veri ? " Gli obblighi scoperti sono quelli che un'autorità o un cliente possono contestare da subito." : "") +
+      (daVerificare ? " I punti «non so» vanno provati dal vivo prima di considerarli a posto." : "");
+    document.getElementById("data").textContent = "Autovalutazione del " + new Date().toLocaleDateString("it-IT", {day:"numeric", month:"long", year:"numeric"}) + ".";
+
+    var box = document.getElementById("gaps"); box.innerHTML = "";
+    if (gaps.length){
+      var h = document.createElement("h2"); h.textContent = "Cosa manca e cosa fare"; box.appendChild(h);
+      gaps.sort(function(a,b){ return (a.stato === "gap" ? 0 : 1) - (b.stato === "gap" ? 0 : 1); });
+      gaps.forEach(function(g){
+        var el = document.createElement("div"); el.className = "gap " + (g.stato === "verifica" ? "verifica" : "");
+        el.innerHTML = "<b>" + (g.stato === "verifica" ? "Da verificare: " : (g.d.consigliato ? "Consigliato: " : "Scoperto: ")) + g.d.t + "</b>" +
+          "<div>" + g.d.fai + "</div><div class='art'>" + g.d.art + "</div>";
+        box.appendChild(el);
+      });
+    }
+    document.getElementById("domande").style.display = "none";
+    var ris = document.getElementById("risultato"); ris.style.display = "block";
+    ris.scrollIntoView({behavior:"smooth", block:"start"});
+    window.__check = {data:new Date().toISOString(), risposte:risposte, coperti:ok, applicabili:applicabili, scoperti:veri, daVerificare:daVerificare};
+  }
+
+  document.getElementById("rifai").addEventListener("click", function(){
+    document.getElementById("risultato").style.display = "none";
+    document.getElementById("domande").style.display = "block";
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+
+  var form = document.getElementById("lead");
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var err = document.getElementById("err"), d = Object.fromEntries(new FormData(form));
+    if (d._gotcha) return;
+    if (!d.nome.trim()) return err.textContent = "Inserisci nome e cognome.";
+    if (!d.azienda.trim()) return err.textContent = "Inserisci l'azienda.";
+    if (!/^\S+@\S+\.\S+$/.test(d.email)) return err.textContent = "L'email non sembra corretta.";
+    if (!d.privacy) return err.textContent = "Serve il consenso per ricontattarti.";
+    err.textContent = ""; delete d._gotcha; d.privacy = "si";
+    d.data = new Date().toISOString(); d.fonte = "check-ai-act";
+    d.check = JSON.stringify(window.__check || {});
+    var btn = document.getElementById("btn"); btn.disabled = true; btn.textContent = "Invio...";
+    if (!ENDPOINT) { console.log("Richiesta (nessun ENDPOINT configurato):", d); return fatto(); }
+    fetch(ENDPOINT, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(d)})
+      .then(fatto)
+      .catch(function(){ btn.disabled = false; btn.textContent = "Richiedi l'audit"; err.textContent = "Invio non riuscito, riprova."; });
+  });
+  function fatto(){ document.body.classList.add("inviato"); document.querySelector(".fine").scrollIntoView({behavior:"smooth", block:"center"}); }
+</script>
+</body>
+</html>
