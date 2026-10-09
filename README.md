@@ -16,12 +16,18 @@ I prezzi sono costanti in cima a `index.html`: si cambiano in due righe.
 - `index.html`: pagina pubblica. 12 domande, semaforo, elenco di cosa manca con l'articolo di riferimento e cosa fare, report stampabile, modulo di richiesta audit.
 - `scansiona.js`: primo passaggio dell'audit. Dato un sito, trova i widget di chat noti, cerca gli avvisi "sei con un'AI" nel testo e nell'informativa privacy, dice cosa provare dal vivo.
 - `google-apps-script.gs`: salva le richieste del modulo su un Google Foglio.
+- `lista-primi-contatti.md`: 76 siti scansionati, 17 con chat e senza avviso (non nel repo pubblico).
+- `mail-primo-contatto.md`: mail e follow-up per chi è scoperto (non nel repo pubblico).
 
-## Per metterlo online
+## Online
+
+Pagina pubblicata: https://lucademarco2005-oss.github.io/check-ai-act/ (repo `lucademarco2005-oss/check-ai-act`).
+
+Restano da fare:
 
 1. Google Foglio nuovo, incolla `google-apps-script.gs` in Estensioni > Apps Script, distribuisci come app web, copia l'URL `/exec` in `ENDPOINT` dentro `index.html`.
 2. In `index.html` metti anche `WA_NUMBER` (numero WhatsApp di chi vende).
-3. Pubblica la cartella su GitHub Pages o su Cloudflare Pages: è un solo file statico.
+3. Ripubblicare con `git push` sul repo.
 
 ## Per fare un audit
 
