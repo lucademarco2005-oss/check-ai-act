@@ -1,6 +1,6 @@
 # Check trasparenza AI Act
 
-Dal 2 agosto 2026 chi usa chatbot, voicebot o contenuti generati con AI verso clienti e pubblico deve dirlo (Regolamento UE 2024/1689, art. 50). Sanzioni fino a 15 M€ o 3% del fatturato. È l'idea numero uno del report Idea Radar 2026-W38.
+Dal 2 agosto 2026 chi usa chatbot, voicebot o contenuti generati con AI verso clienti e pubblico deve dirlo (Regolamento UE 2024/1689, art. 50). Sanzioni fino a 15 M€ o 3% del fatturato (per le PMI il minore dei due). Business case completo in `reports/`. È l'idea numero uno del report Idea Radar 2026-W38.
 
 ## Cosa si vende
 
@@ -18,6 +18,10 @@ I prezzi sono costanti in cima a `index.html`: si cambiano in due righe.
 - `google-apps-script.gs`: salva le richieste del modulo su un Google Foglio.
 - `lista-primi-contatti.md`: 76 siti scansionati, 17 con chat e senza avviso (non nel repo pubblico).
 - `mail-primo-contatto.md`: mail e follow-up per chi è scoperto (non nel repo pubblico).
+- `partner-canale.md`: i fornitori di chatbot italiani con i loro clienti dichiarati, e la mail per proporgli l'audit da rivendere.
+- `presentazione/`: pacchetto per la decisione del CEO. `LEGGIMI.md` (indice e cosa è stato fatto), `presentazione.html` e `.pdf` (11 slide), `audio/presentazione.mp3` (la presentazione raccontata), `audio-testo.md`.
+- `fascicolo/`: il prodotto consegnato. Fascicolo di verifica su Yoyomove (HTML + PDF): sintesi, perimetro, riferimenti, prove con screenshot, rilievi con priorità e correzione, testi di avviso pronti da incollare, piano di chiusura. Per un nuovo cliente si copia l'HTML, si cambiano i campi e si stampa in PDF con Chrome.
+- `verifiche-dal-vivo.md` e `prove/`: chat provate a mano con screenshot datato. Yoyomove e The Double F scoperti, Spiagge.it in regola.
 
 ## Online
 

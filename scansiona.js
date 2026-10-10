@@ -102,6 +102,7 @@ async function analizza(sito) {
     return righe.join("\n");
   }
   const widget = WIDGET.filter(([, re]) => re.test(home.html)).map(([n]) => n);
+  const tagManager = /googletagmanager\.com\/gtm\.js|GTM-[A-Z0-9]{4,}|cdn\.segment\.com|tealium/i.test(home.html);
   const testoHome = soloTesto(home.html);
   const avvisiHome = trova(AVVISI, testoHome);
   const avvisiScript = trova(AVVISI, home.html).filter(a => !avvisiHome.includes(a));
@@ -114,7 +115,7 @@ async function analizza(sito) {
     if (p.html) avvisiPriv = trova(AVVISI, soloTesto(p.html));
   }
 
-  righe.push(`**Widget di chat rilevati nell'HTML:** ${widget.length ? widget.join(", ") : "nessuno (il bot può caricarsi dopo, da verificare dal vivo)"}`);
+  righe.push(`**Widget di chat rilevati nell'HTML:** ${widget.length ? widget.join(", ") : (tagManager ? "nessuno, ma c'è un tag manager: il bot può arrivare da lì (verificare dal vivo)" : "nessuno (il bot può caricarsi dopo, da verificare dal vivo)")}`);
   righe.push(`**Avvisi "sei con un'AI" nel testo visibile della home:** ${avvisiHome.length ? avvisiHome.map(a => `«${a}»`).join("; ") : "nessuno"}`);
   if (avvisiScript.length) righe.push(`**Riferimenti all'AI solo nel codice (non visibili all'utente):** ${avvisiScript.map(a => `«${a}»`).join("; ")}`);
   righe.push(`**Informativa privacy:** ${privStato}`);
