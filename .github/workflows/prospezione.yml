@@ -1,0 +1,40 @@
+name: Prospezione settimanale
+# Ogni lunedì: verifica dal vivo i domini in automazione/prospetti.txt, scrive le bozze e,
+# se PROSPEZIONE_INVIA=1 nei secrets, manda le mail con lo screenshot a chi è scoperto.
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+jobs:
+  prospezione:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      MITTENTE: ${{ secrets.MITTENTE }}
+      RISPONDI_A: ${{ secrets.RISPONDI_A }}
+      LINK_ORDINE: ${{ secrets.LINK_ORDINE }}
+      CHROME: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci --prefix automazione || npm install --prefix automazione
+      - uses: browser-actions/setup-chrome@v1
+        with: { chrome-version: stable }
+      - run: sudo ln -sf "$(which chrome)" /usr/bin/google-chrome
+      - name: Pipeline
+        run: |
+          cd automazione
+          INVIA=""; [ "${{ secrets.PROSPEZIONE_INVIA }}" = "1" ] && INVIA="--invia"
+          CONT=""; [ -f contatti.csv ] && CONT="--contatti contatti.csv"
+          node pipeline.js --lista prospetti.txt $CONT $INVIA
+      - name: Salva registro
+        run: |
+          cd automazione
+          git config user.name "audit-bot"; git config user.email "audit-bot@users.noreply.github.com"
+          git add pipeline.csv bozze && git commit -m "Prospezione $(date +%F)" && git push || true
+      - uses: actions/upload-artifact@v4
+        with: { name: prospezione-${{ github.run_id }}, path: automazione/risultati/**, retention-days: 30 }

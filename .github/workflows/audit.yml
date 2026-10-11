@@ -1,0 +1,50 @@
+name: Audit automatico
+# Parte da un ordine (Stripe -> webhook -> repository_dispatch) o a mano (workflow_dispatch).
+# Verifica il sito, genera il fascicolo PDF e lo manda al cliente. Nessuna persona nel mezzo.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dominio: { description: "Sito da verificare (es. esempio.it)", required: true }
+      email: { description: "Email del cliente", required: true }
+      azienda: { description: "Nome azienda", required: false, default: "" }
+  repository_dispatch:
+    types: [audit]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DOMINIO: ${{ github.event.inputs.dominio || github.event.client_payload.dominio }}
+      EMAIL: ${{ github.event.inputs.email || github.event.client_payload.email }}
+      AZIENDA: ${{ github.event.inputs.azienda || github.event.client_payload.azienda || '' }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      MITTENTE: ${{ secrets.MITTENTE }}
+      RISPONDI_A: ${{ secrets.RISPONDI_A }}
+      CHROME: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci --prefix automazione || npm install --prefix automazione
+      - name: Chrome
+        uses: browser-actions/setup-chrome@v1
+        with: { chrome-version: stable }
+      - run: sudo ln -sf "$(which chrome)" /usr/bin/google-chrome
+      - name: Verifica, fascicolo, consegna
+        run: |
+          cd automazione
+          node consegna.js --dominio "$DOMINIO" --email "$EMAIL" --azienda "${AZIENDA:-$DOMINIO}" --invia | tee esito-consegna.json
+      - name: Registra cliente per il ricontrollo
+        run: |
+          cd automazione
+          touch clienti.csv; [ -s clienti.csv ] || echo "dominio,email,azienda" > clienti.csv
+          grep -q "^$DOMINIO," clienti.csv || echo "$DOMINIO,$EMAIL,${AZIENDA:-$DOMINIO}" >> clienti.csv
+          git config user.name "audit-bot"; git config user.email "audit-bot@users.noreply.github.com"
+          git add clienti.csv && git commit -m "Cliente: $DOMINIO" && git push || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fascicolo-${{ env.DOMINIO }}
+          path: automazione/risultati/**
+          retention-days: 90

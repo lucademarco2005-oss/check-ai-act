@@ -6,12 +6,15 @@ Dal 2 agosto 2026 chi usa chatbot, voicebot o contenuti generati con AI verso cl
 
 | | Prezzo | Cosa include |
 |---|---|---|
-| Audit | 1.500 € fisso | Prova del bot dal vivo (desktop e telefono), controllo dei contenuti pubblicati, fascicolo con screenshot datati, correzioni e testi di avviso già scritti. Consegna in 5 giorni lavorativi. |
+| Audit automatico (vedi `automazione/`) | 290 € | Fascicolo PDF in 5 minuti: chat aperta da desktop e telefono, primo messaggio letto, rilievi, testi da incollare, screenshot datati. |
+| Audit con verifica umana | 1.500 € fisso | Prova del bot dal vivo (desktop e telefono), controllo dei contenuti pubblicati, fascicolo con screenshot datati, correzioni e testi di avviso già scritti. Consegna in 5 giorni lavorativi. |
 | Ricontrollo | 150 €/mese | Nuova verifica a ogni modifica del bot e a ogni cambio di regole. Disdetta libera. |
 
 I prezzi sono costanti in cima a `index.html`: si cambiano in due righe.
 
 ## Cosa c'è
+
+- `automazione/`: **la versione senza persone**. Scanner dal vivo con Chrome headless (apre la chat, legge il primo messaggio, giudica, screenshot), fascicolo generato in automatico, pipeline di contatto con invio via Resend, consegna automatica dopo pagamento Stripe, ricontrollo mensile. Tutto in `automazione/AUTOMAZIONE.md`.
 
 - `index.html`: pagina pubblica. 12 domande, semaforo, elenco di cosa manca con l'articolo di riferimento e cosa fare, report stampabile, modulo di richiesta audit.
 - `scansiona.js`: primo passaggio dell'audit. Dato un sito, trova i widget di chat noti, cerca gli avvisi "sei con un'AI" nel testo e nell'informativa privacy, dice cosa provare dal vivo.

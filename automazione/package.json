@@ -1,0 +1,24 @@
+{
+  "name": "check-ai-act-automazione",
+  "version": "1.0.0",
+  "description": "Verifica automatica trasparenza AI Act art. 50: chat, fascicolo, consegna, ricontrollo",
+  "main": "index.js",
+  "scripts": {
+    "verifica": "node verifica.js",
+    "fascicolo": "node fascicolo.js",
+    "pipeline": "node pipeline.js",
+    "consegna": "node consegna.js",
+    "ricontrollo": "node ricontrollo.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "playwright-core": "^1.64.0"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  }
+}

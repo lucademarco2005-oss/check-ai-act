@@ -1,0 +1,6 @@
+{
+  "name": "check-ai-act-ordini",
+  "main": "worker.js",
+  "compatibility_date": "2026-07-01"
+  // Segreti: wrangler secret put STRIPE_WEBHOOK_SECRET ; wrangler secret put GITHUB_TOKEN ; wrangler secret put GITHUB_REPO
+}

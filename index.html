@@ -98,6 +98,12 @@
       <div><div class="n" id="prezzo-canone"></div>Ricontrollo a ogni modifica del bot e a ogni cambio di regole. Disdetta libera.</div>
     </div>
 
+    <div class="card" id="ordine">
+      <b>Audit automatico, senza aspettare nessuno</b>
+      <p style="margin:6px 0 10px">Paghi, indichi il sito, e il fascicolo arriva via email: la verifica apre la chat del tuo sito da computer e da telefono, legge il primo messaggio, lo confronta con le Linee guida e genera il fascicolo con screenshot datati e i testi da incollare. Ricontrollo automatico alle scadenze del 2 dicembre 2026 e del 2 febbraio 2027.</p>
+      <a id="paga" class="btn" style="display:block;text-align:center;text-decoration:none">Ordina l'audit automatico</a>
+      <p class="muted" style="margin-top:8px;font-size:14px">Se preferisci parlarne prima, usa il modulo qui sotto.</p>
+    </div>
     <div class="card">
       <form id="lead" novalidate>
         <div class="riga due">
@@ -136,6 +142,7 @@
   var WA_NUMBER = "";                    // es. "393401234567" (senza + e senza spazi). Vuoto = link nascosto
   var WA_TEXT = "Ciao, ho fatto il check trasparenza AI Act e vorrei l'audit del nostro chatbot.";
   var ENDPOINT = "";                     // URL /exec dell'Apps Script (vedi google-apps-script.gs). Vuoto = solo log in console
+  var LINK_STRIPE = "";                  // Payment Link di Stripe con i campi "sito" e "azienda". Vuoto = bottone nascosto
   // ==========================
 
   var DOMANDE = [
@@ -191,6 +198,8 @@
 
   document.getElementById("prezzo-audit").textContent = PREZZO_AUDIT;
   document.getElementById("prezzo-canone").textContent = PREZZO_CANONE;
+  var paga = document.getElementById("paga");
+  if (LINK_STRIPE) paga.href = LINK_STRIPE; else document.getElementById("ordine").style.display = "none";
   var wa = document.getElementById("wa");
   if (WA_NUMBER) wa.href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(WA_TEXT);
   else wa.parentElement.style.display = "none";

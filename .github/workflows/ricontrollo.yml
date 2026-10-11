@@ -1,0 +1,42 @@
+name: Ricontrollo mensile
+# Ogni primo del mese e alle scadenze normative (2 dicembre 2026, 2 febbraio 2027) riverifica tutti i clienti.
+# Manda il nuovo fascicolo solo a chi ha una chat cambiata (o a tutti, alle scadenze).
+
+on:
+  schedule:
+    - cron: "0 6 1 * *"
+    - cron: "0 6 2 12 *"
+    - cron: "0 6 2 2 *"
+  workflow_dispatch:
+    inputs:
+      forza: { description: "Manda a tutti anche senza cambiamenti", type: boolean, default: false }
+
+jobs:
+  ricontrollo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      MITTENTE: ${{ secrets.MITTENTE }}
+      RISPONDI_A: ${{ secrets.RISPONDI_A }}
+      CHROME: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci --prefix automazione || npm install --prefix automazione
+      - uses: browser-actions/setup-chrome@v1
+        with: { chrome-version: stable }
+      - run: sudo ln -sf "$(which chrome)" /usr/bin/google-chrome
+      - name: Ricontrollo
+        run: |
+          cd automazione
+          FORZA=""; if [ "${{ github.event.inputs.forza }}" = "true" ] || [ "$(date +%m-%d)" = "12-02" ] || [ "$(date +%m-%d)" = "02-02" ]; then FORZA="--forza"; fi
+          node ricontrollo.js --invia $FORZA | tee report-ricontrollo.json
+      - name: Salva storico
+        run: |
+          cd automazione
+          git config user.name "audit-bot"; git config user.email "audit-bot@users.noreply.github.com"
+          git add storico && git commit -m "Ricontrollo $(date +%F)" && git push || true
+      - uses: actions/upload-artifact@v4
+        with: { name: ricontrollo-${{ github.run_id }}, path: automazione/risultati/**, retention-days: 90 }
